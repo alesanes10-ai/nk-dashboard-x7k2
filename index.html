@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NK · Preview de Visualizaciones</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --gold: #B8860B; --gold-light: #D4A017; --dark: #1a1a2e; --card: #ffffff;
+    --bg: #f4f1eb; --border: #e0d8cc; --text: #2c2c2c; --mid: #888;
+    --green: #2e7d32; --red: #c62828; --blue: #1565c0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--dark); color: #fff; padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  }
+  .topbar h1 { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+  .topbar span { font-size: 11px; color: var(--gold-light); letter-spacing: 1px; }
+  .badge-temp { background: #b71c1c; color: #fff; font-size: 10px; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* NAV PILLS */
+  .nav { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 4px; overflow-x: auto; }
+  .nav-btn {
+    padding: 12px 18px; border: none; background: none; cursor: pointer;
+    font-size: 12px; font-weight: 600; color: var(--mid); white-space: nowrap;
+    border-bottom: 3px solid transparent; transition: all .2s;
+  }
+  .nav-btn.active, .nav-btn:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* SECTIONS */
+  .section { display: none; padding: 28px 32px; }
+  .section.active { display: block; }
+  .section-title { font-size: 20px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+  .section-sub { font-size: 12px; color: var(--mid); margin-bottom: 24px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-1 { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+
+  /* PANEL */
+  .panel {
+    background: var(--card); border-radius: 12px; border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden;
+  }
+  .panel-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+  .panel-num { font-size: 10px; font-weight: 700; color: var(--gold); letter-spacing: 2px; margin-bottom: 4px; }
+  .panel-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+  .panel-desc { font-size: 11px; color: var(--mid); margin-top: 3px; }
+  .chart-wrap { padding: 12px; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--card); border-radius: 12px; border: 1px solid var(--border);
+    padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .kpi-label { font-size: 10px; letter-spacing: 2px; color: var(--mid); text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-bar { width: 28px; height: 3px; background: var(--gold); border-radius: 2px; margin-bottom: 12px; }
+  .kpi-val { font-size: 26px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+  .kpi-sub { font-size: 11px; color: var(--mid); }
+  .kpi-delta-pos { color: var(--green); font-weight: 700; }
+  .kpi-delta-neg { color: var(--red); font-weight: 700; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .section { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div style="font-size:10px;color:var(--gold-light);letter-spacing:2px;margin-bottom:4px">NK · ACCESORIOS</div>
+    <h1>PREVIEW DE VISUALIZACIONES</h1>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span>2023 – 2026 · Datos reales BD</span>
+    <div class="badge-temp">⚠ TEMPORAL</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('g1')">G1 · Tendencias</button>
+  <button class="nav-btn" onclick="showSection('g2')">G2 · Productos</button>
+  <button class="nav-btn" onclick="showSection('g3')">G3 · Canales</button>
+  <button class="nav-btn" onclick="showSection('g4')">G4 · Vendedores</button>
+  <button class="nav-btn" onclick="showSection('g5')">G5 · Clientes</button>
+  <button class="nav-btn" onclick="showSection('g6')">G6 · Pagos</button>
+  <button class="nav-btn" onclick="showSection('g7')">G7 · KPIs</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 1 — TENDENCIAS TEMPORALES
+══════════════════════════════════════════════════════════ -->
+<div id="g1" class="section active">
+  <div class="section-title">Grupo 1 · Tendencias Temporales</div>
+  <div class="section-sub">Evolución de ventas a lo largo del tiempo — estacionalidad, crecimiento y ticket</div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 1</div>
+        <div class="panel-title">Evolución de Ingresos Mensual Multi-Año</div>
+        <div class="panel-desc">Comparar 2023 / 2024 / 2025 / 2026 mes a mes · Detectar estacionalidad y crecimiento</div>
+      </div>
+      <div class="chart-wrap"><div id="c1" style="height:320px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 2</div>
+        <div class="panel-title">Ingresos vs Ganancia vs Margen %</div>
+        <div class="panel-desc">¿El crecimiento en ventas es rentable? Barras + línea secundaria de margen</div>
+      </div>
+      <div class="chart-wrap"><div id="c2" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 3</div>
+        <div class="panel-title">Crecimiento YoY por Mes (%)</div>
+        <div class="panel-desc">Cuánto creció cada mes vs el mismo mes del año anterior</div>
+      </div>
+      <div class="chart-wrap"><div id="c3" style="height:300px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 4</div>
+        <div class="panel-title">Heatmap — Día de Semana × Mes</div>
+        <div class="panel-desc">Combinaciones día/mes con más ventas · Planificación de turnos y promociones</div>
+      </div>
+      <div class="chart-wrap"><div id="c4" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 5</div>
+        <div class="panel-title">Tendencia del Ticket Promedio por Mes</div>
+        <div class="panel-desc">El ticket bajó de $321K (2023) a $175K (2026) · ¿Descuentos o cambio de mix?</div>
+      </div>
+      <div class="chart-wrap"><div id="c5" style="height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 2 — PRODUCTOS
+══════════════════════════════════════════════════════════ -->
+<div id="g2" class="section">
+  <div class="section-title">Grupo 2 · Productos y Categorías</div>
+  <div class="section-sub">Análisis del portafolio — participación, rentabilidad y evolución del mix</div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 6</div>
+        <div class="panel-title">Participación de Ingresos por Categoría</div>
+        <div class="panel-desc">Relojes 60% · Perfumes 21% · Repuestos 7% — visualizar el mix del negocio</div>
+      </div>
+      <div class="chart-wrap"><div id="c6" style="height:320px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 7</div>
+        <div class="panel-title">Ingresos vs Margen por Categoría</div>
+        <div class="panel-desc">Repuestos: 59% margen, Servicios: 90% — oportunidades no explotadas</div>
+      </div>
+      <div class="chart-wrap"><div id="c7" style="height:320px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 8</div>
+        <div class="panel-title">Top 20 Productos por Ingresos</div>
+        <div class="panel-desc">Ranking de productos estrella con margen · Invicta Pro Diver domina claramente</div>
+      </div>
+      <div class="chart-wrap"><div id="c8" style="height:360px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 9</div>
+        <div class="panel-title">Matriz Volumen vs Rentabilidad</div>
+        <div class="panel-desc">Eje X = transacciones · Eje Y = margen % · Burbuja = ingresos · Joyas ocultas</div>
+      </div>
+      <div class="chart-wrap"><div id="c9" style="height:320px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 10</div>
+        <div class="panel-title">Evolución del Mix de Productos por Año</div>
+        <div class="panel-desc">¿El negocio se diversifica o se concentra más en relojes?</div>
+      </div>
+      <div class="chart-wrap"><div id="c10" style="height:320px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 3 — CANALES
+══════════════════════════════════════════════════════════ -->
+<div id="g3" class="section">
+  <div class="section-title">Grupo 3 · Canales de Venta</div>
+  <div class="section-sub">Dónde se vende, cómo se rentabiliza y cómo evolucionan los canales digitales</div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 11</div>
+        <div class="panel-title">Ingresos por Canal de Venta</div>
+        <div class="panel-desc">Directa 69% · LuegoPago 17% · MercadoLibre 4% — con márgenes muy diferentes</div>
+      </div>
+      <div class="chart-wrap"><div id="c11" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 12</div>
+        <div class="panel-title">Margen % por Canal</div>
+        <div class="panel-desc">Desde 90.5% (Servicio directo) hasta 29.2% (Tu360) · Crítico para mezcla de ventas</div>
+      </div>
+      <div class="chart-wrap"><div id="c12" style="height:300px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 13</div>
+        <div class="panel-title">Evolución Presencial vs Digital vs Financiado</div>
+        <div class="panel-desc">¿Los canales online y financiados ganan terreno año a año?</div>
+      </div>
+      <div class="chart-wrap"><div id="c13" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 14</div>
+        <div class="panel-title">Heatmap Canal × Tipo de Producto (Ingresos)</div>
+        <div class="panel-desc">Tu360 vende principalmente Perfumes · Cada canal tiene un perfil de producto distinto</div>
+      </div>
+      <div class="chart-wrap"><div id="c14" style="height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 4 — VENDEDORES
+══════════════════════════════════════════════════════════ -->
+<div id="g4" class="section">
+  <div class="section-title">Grupo 4 · Vendedores y Punto de Venta</div>
+  <div class="section-sub">Rendimiento individual, evolución y perfil por punto de venta</div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 15</div>
+        <div class="panel-title">Ingresos y Margen por Vendedor</div>
+        <div class="panel-desc">Anggie lidera en volumen ($393M) · Diana lidera en margen (72%) · ¿Qué hace diferente Diana?</div>
+      </div>
+      <div class="chart-wrap"><div id="c15" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 16</div>
+        <div class="panel-title">Rendimiento de Vendedores por Año</div>
+        <div class="panel-desc">Evolución de ingresos por vendedor 2025–2026 · Quién crece, quién cae</div>
+      </div>
+      <div class="chart-wrap"><div id="c16" style="height:300px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 17</div>
+        <div class="panel-title">Ticket Promedio por Vendedor</div>
+        <div class="panel-desc">¿A qué rango de precios vende cada uno? Detectar patrones de descuento</div>
+      </div>
+      <div class="chart-wrap"><div id="c17" style="height:280px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 18</div>
+        <div class="panel-title">Ingresos por Punto de Venta</div>
+        <div class="panel-desc">Isla $251M vs Virtual $244M — dos negocios casi del mismo tamaño</div>
+      </div>
+      <div class="chart-wrap"><div id="c18" style="height:280px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 19</div>
+        <div class="panel-title">Mix de Productos por Punto de Venta</div>
+        <div class="panel-desc">¿La Isla vende más relojes? ¿Lo Virtual más perfumes? Personalizar estrategia por punto</div>
+      </div>
+      <div class="chart-wrap"><div id="c19" style="height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 5 — CLIENTES
+══════════════════════════════════════════════════════════ -->
+<div id="g5" class="section">
+  <div class="section-title">Grupo 5 · Clientes y Recurrencia</div>
+  <div class="section-sub">Quiénes son los mejores clientes, qué tan leales son y en qué segmento de precio compran</div>
+
+  <div class="grid-1">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 20</div>
+        <div class="panel-title">Top 15 Clientes por Gasto Total</div>
+        <div class="panel-desc">Fonfaranda $17.6M (49 compras) · George Market ticket $1M por compra · Clientes VIP identificados</div>
+      </div>
+      <div class="chart-wrap"><div id="c20" style="height:340px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 21</div>
+        <div class="panel-title">Frecuencia de Compra por Cliente</div>
+        <div class="panel-desc">1.436 clientes compran solo 1 vez · Solo 28 clientes con 11+ compras · Oportunidad de fidelización</div>
+      </div>
+      <div class="chart-wrap"><div id="c21" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 23</div>
+        <div class="panel-title">Segmentos de Precio de Compra</div>
+        <div class="panel-desc">Distribución de transacciones por rango de precio · Identificar el segmento dominante</div>
+      </div>
+      <div class="chart-wrap"><div id="c23" style="height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 6 — PAGOS
+══════════════════════════════════════════════════════════ -->
+<div id="g6" class="section">
+  <div class="section-title">Grupo 6 · Formas de Pago y Financiamiento</div>
+  <div class="section-sub">Cómo pagan los clientes · Exposición a crédito · Riesgo de cartera</div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 24</div>
+        <div class="panel-title">Ingresos por Grupo de Pago</div>
+        <div class="panel-desc">Contado vs Crédito Propio vs Financiadores · Exposición a cartera y riesgo</div>
+      </div>
+      <div class="chart-wrap"><div id="c24" style="height:320px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 25</div>
+        <div class="panel-title">Evolución Crédito vs Contado por Año</div>
+        <div class="panel-desc">¿El negocio depende cada vez más del crédito para vender?</div>
+      </div>
+      <div class="chart-wrap"><div id="c25" style="height:320px"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     GRUPO 7 — KPIs EJECUTIVOS
+══════════════════════════════════════════════════════════ -->
+<div id="g7" class="section">
+  <div class="section-title">Grupo 7 · KPIs Ejecutivos</div>
+  <div class="section-sub">Tarjetas de resumen para lectura rápida del negocio · Vista gerencial</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Ingresos Totales</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-val">$926M</div>
+      <div class="kpi-sub">2023 – 2026 acumulado</div>
+      <div class="kpi-sub" style="margin-top:6px"><span class="kpi-delta-pos">↑ +79%</span> vs 2023</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ganancia Total</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-val">$381M</div>
+      <div class="kpi-sub">Margen promedio 45.7%</div>
+      <div class="kpi-sub" style="margin-top:6px"><span class="kpi-delta-pos">↑ +52.8%</span> margen 2026</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Transacciones</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-val">4.017</div>
+      <div class="kpi-sub">Total 2023–2026</div>
+      <div class="kpi-sub" style="margin-top:6px"><span class="kpi-delta-pos">↑ +184%</span> de 598 a 1.697 tx</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ticket Promedio</div>
+      <div class="kpi-bar"></div>
+      <div class="kpi-val">$231K</div>
+      <div class="kpi-sub">Promedio 2023–2026</div>
+      <div class="kpi-sub" style="margin-top:6px"><span class="kpi-delta-neg">↓ -45%</span> vs $321K en 2023</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 26 · KPI</div>
+        <div class="panel-title">Ingresos Anuales con Variación YoY</div>
+        <div class="panel-desc">Vista ejecutiva de crecimiento año a año — ingresos, ganancia y variación %</div>
+      </div>
+      <div class="chart-wrap"><div id="c26" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 27 · KPI</div>
+        <div class="panel-title">Margen Bruto por Año</div>
+        <div class="panel-desc">Evolución del margen % — tendencia positiva de 40.7% (2023) a 52.8% (2026)</div>
+      </div>
+      <div class="chart-wrap"><div id="c27" style="height:300px"></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 28 · KPI</div>
+        <div class="panel-title">Ranking Vendedor — Ingresos y Margen</div>
+        <div class="panel-desc">Scorecard por vendedor con ingresos totales y margen promedio</div>
+      </div>
+      <div class="chart-wrap"><div id="c28" style="height:300px"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-num">GRÁFICO 30 · KPI</div>
+        <div class="panel-title">Ventas por Día de la Semana</div>
+        <div class="panel-desc">Viernes y Sábado son los días más fuertes · Planificación de personal</div>
+      </div>
+      <div class="chart-wrap"><div id="c30" style="height:300px"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── HELPERS ──────────────────────────────────────────────────────────
+function fmt(v){ return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v); }
+function fmtM(v){ return '$'+Math.round(v/1e6)+'M'; }
+function fmtK(v){ return '$'+Math.round(v/1e3)+'K'; }
+const GOLD='#B8860B', GOLD2='#D4A017', DARK='#1a1a2e', BLUE='#1565c0', GREEN='#2e7d32', RED='#c62828';
+const COLORS=['#B8860B','#1565c0','#2e7d32','#c62828','#6a1a9a','#00838f','#e65100','#37474f'];
+
+function nav(id){ return echarts.init(document.getElementById(id)); }
+
+// ── NAVEGACIÓN ───────────────────────────────────────────────────────
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  setTimeout(()=>initCharts(id), 50);
+}
+
+// ── DATOS ────────────────────────────────────────────────────────────
+const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// Mensual por año
+const dataByYear = {
+  2023: {i:[0,0,0,21152662,29935747,18751846,20682429,29011055,26325673,13564369,13850617,18889226], g:[0,0,0,8724922,11775253,8145916,8178343,11852173,10280596,5164168,5638712,7977080], t:[0,0,0,330510,332619,334854,333588,287238,346390,315450,314787,304665]},
+  2024: {i:[14552757,22526543,18458902,16807397,26117585,19440825,15851516,22282961,25479235,18655755,31085920,40075434], g:[6610377,9519486,7558569,6616013,11186871,8059374,6477131,8345795,9135234,7380416,11786045,16131021], t:[338436,296402,279680,275531,269253,290162,264192,285679,233754,278444,240976,207645]},
+  2025: {i:[15175927,20757799,22000433,23568983,36018989,29707818,36337305,22941126,31034653,29766616,19987092,56436894], g:[6778549,8967713,9094516,9049473,13683731,11138350,13521916,9483947,12148811,12450859,8756376,25339938], t:[185072,220828,196432,177210,253655,185674,217589,171202,209694,197130,181701,213776]},
+  2026: {i:[23595817,21675741,34089938,23016674,16471240,0,0,0,0,0,0,0], g:[10116757,9504418,15155201,11585973,7526977,0,0,0,0,0,0,0], t:[160516,169342,195919,168005,183014,0,0,0,0,0,0,0]}
+};
+
+// Tipos de producto
+const tipos = {
+  nombres:['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros','Gafas','Manilla','Billetera','Crema','Servicio'],
+  ingresos:[558066834,193423831,64920077,41952310,22941392,16030907,13033730,11051202,3341726,648608,561668,90000],
+  ganancia:[231530656,70966558,28959423,18824728,10915741,7568273,5310433,4625445,1484100,376104,228325,50000],
+  margen:[41.4,37.8,59.1,43.3,47.5,46.4,45.4,43.6,43.0,58.1,40.2,90.5],
+  tx:[1369,717,1123,464,87,81,92,23,43,4,6,7]
+};
+
+// Top 20 productos
+const top20 = {
+  nombres:["Invicta 6983","Splash Vict. Secret","Invicta 6981","Invicta 22340","Invicta 6977","Gorra Columbia","Yara EDP Lattafa","Splash B&BW","Invicta 0072","Bade'e Al Oud Glory","Bade'e Al Oud Ameth.","Invicta 0073","Nautica Voyage","Manilla Invicta","Crema Vict. Secret","Khamrah Lattafa","Club Nuit Women","Club Nuit Intense","Invicta 30022","Starwalker Montblanc"],
+  ingresos:[29180286,21495766,15062465,15036322,9423160,9313244,8538020,7186069,6701694,6641964,6422312,5648415,5465058,4785041,4204150,3975000,3881242,3851072,3503722,3410000],
+  margen:[42.8,44.4,43.6,39.8,45.9,46.3,41.0,40.6,43.4,40.2,36.3,43.1,43.0,41.6,38.0,40.0,42.5,41.4,43.5,42.7],
+  tipo:['Reloj','Splash','Reloj','Reloj','Reloj','Gorra','Perfume','Splash','Reloj','Perfume','Perfume','Reloj','Perfume','Repuesto','Splash','Perfume','Perfume','Perfume','Reloj','Perfume']
+};
+
+// Canales
+const canales = {
+  nombres:['Directa','LuegoPago','Tu360 Bancolombia','MercadoLibre','Sistecredito','Addi','Addi Marketplace','Página Web'],
+  ingresos:[642554878,157389581,40445297,35998252,24677572,10788442,5418166,4348748],
+  margen:[49.5,39.5,29.2,37.8,41.4,35.9,41.3,34.7],
+  tx:[2845,492,139,381,67,33,12,10]
+};
+
+// Vendedores
+const vendedores = {
+  nombres:['Anggie','Luisa','Argentina','Diana','Nayit'],
+  ingresos:[392825263,48111097,7144885,6007674,5042668],
+  margen:[45.9,62.6,56.6,72.1,45.9],
+  ticket:[218115,120882,121100,103581,186765]
+};
+
+// Puntos de venta
+const puntos = {
+  nombres:['Isla','Virtual','Mayorista','Directa','Presencial','Nayit'],
+  ingresos:[250830693,243713184,33429865,695000,525000,300000],
+  margen:[54.8,40.6,38.7,72.6,43.4,41.4]
+};
+
+// Mix por año
+const mixYear = {
+  2023:{Reloj:127637009,Perfume:43760625,Repuesto:7388552,Splash:4979732,Otros:4117805,Gafas:2050000,Bolso:1749901,Gorra:420000},
+  2024:{Reloj:155566202,Perfume:70247867,Splash:14358696,Repuesto:11499728,Gorra:8269923,Bolso:7175705,Otros:2957448,Gafas:1040000,Manilla:219261},
+  2025:{Reloj:210575776,Perfume:63755809,Repuesto:31247593,Splash:16532421,Bolso:7369939,Gorra:4738135,Otros:4299425,Manilla:2345465,Gafas:2230147,Crema:331668,Billetera:258044},
+  2026:{Reloj:64287847,Perfume:15659530,Repuesto:14784205,Bolso:6645847,Splash:6081462,Gafas:5731055,Gorra:2602849,Otros:1659052,Manilla:777000,Billetera:390564,Crema:230000}
+};
+
+// Clientes top
+const topClientes = {
+  nombres:['Fonfaranda','MercadoLibre','A.F. Herrera Niño','Rhonal Montes','Ivet Marimon','R. Montes Castellar','Nicole A. Herrera','Cindy Castellon','Hernan Garcia','Mayelis Castro','George Market','A.F. Herrera (dup)','Deivis Pautt','Jaime Ramos','Guido Garcia'],
+  gasto:[17645227,12633700,12174000,10040000,8652900,8075000,7399077,6800294,6610500,6510000,6060000,5165000,4590000,4440000,4226000],
+  compras:[49,160,54,26,17,26,31,23,24,13,6,22,14,16,15]
+};
+
+// Frecuencia clientes
+const freqClientes = {seg:['1 compra','2 compras','3-5 compras','6-10 compras','11+ compras'],cnt:[1436,183,152,58,28]};
+
+// Segmentos precio
+const segPrecio = {seg:['Bajo\n<100K','Medio\n100K-300K','Alto\n300K-600K','Premium\n>600K'],tx:[1532,1241,1033,211],ing:[83322969,240977609,437125183,164655737]};
+
+// Pagos
+const pagos = {
+  nombres:['Contado','Crédito Propio','LuegoPago','Addi','Sistecredito','Tu360 Bancolombia','Otro'],
+  ingresos:[203904292,145675732,42143915,32121178,13084222,7922514,11991213]
+};
+
+// KPI anuales
+const kpiAnual = {
+  anios:[2023,2024,2025,2026],
+  ingresos:[192163624,271334830,343733634,118849411],
+  ganancia:[77737163,108806332,140414180,53889326],
+  margen:[40.7,41.7,48.8,52.8],
+  ticket:[321344,259402,202554,175813],
+  tx:[598,1046,1697,676]
+};
+
+// Canal presencial/digital/financiado por año
+const canalEvo = {
+  anios:[2023,2024,2025,2026],
+  presencial:[114864685,155698001,272072005,99920187],
+  digital:[5777252,8475063,21580728,9932122],
+  financiado:[71001687,104823766,48717388,8758051]
+};
+
+// Heatmap canal x tipo
+const heatCanal = {
+  canales:['Directa','LuegoPago','Tu360 Banc.','MercadoLibre','Sistecredito','Addi','Addi Mkt','Pág. Web'],
+  tipos:['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros','Gafas','Manilla','Billetera'],
+  data:[
+    [380250400,135610317,33978344,36224271,20644973,13911970,9424742,8718430,2800549,320000],
+    [129251576,17328472,0,5111963,1861610,1677538,2020378,0,0,138044],
+    [7824718,30675688,0,0,0,0,683610,1070717,0,190564],
+    [5107607,0,30439468,0,0,0,0,0,451177,0],
+    [19800816,3890506,0,362350,215600,163300,245000,0,0,0],
+    [7175553,2887689,92265,253726,219209,160000,0,0,0,0],
+    [5165360,252806,0,0,0,0,0,0,0,0],
+    [1869291,1099303,0,0,0,118099,0,1262055,0,0]
+  ]
+};
+
+// Vendedores por año
+const vendYear = {
+  2025:{Anggie:294190250,Luisa:41049258,Nayit:5042668},
+  2026:{Anggie:98635013,Argentina:7144885,Luisa:7061838,Diana:6007674}
+};
+
+// ── INIT BY SECTION ──────────────────────────────────────────────────
+const rendered = {};
+function initCharts(sec){
+  if(rendered[sec]) return;
+  rendered[sec] = true;
+  if(sec==='g1') initG1();
+  if(sec==='g2') initG2();
+  if(sec==='g3') initG3();
+  if(sec==='g4') initG4();
+  if(sec==='g5') initG5();
+  if(sec==='g6') initG6();
+  if(sec==='g7') initG7();
+}
+
+// ══ GRUPO 1 ══════════════════════════════════════════════════════════
+function initG1(){
+  // G1: Multi-año línea
+  const c1 = nav('c1');
+  c1.setOption({
+    tooltip:{trigger:'axis',formatter:p=>{let s=`<b>${meses[p[0].dataIndex]}</b><br>`;p.forEach(x=>{s+=`${x.marker}${x.seriesName}: ${fmtM(x.value)}<br>`});return s;}},
+    legend:{data:['2023','2024','2025','2026'],top:4},
+    grid:{left:60,right:20,bottom:40,top:44},
+    xAxis:{type:'category',data:meses},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[2023,2024,2025,2026].map((y,i)=>({
+      name:String(y), type:'line', smooth:true,
+      symbol:'circle', symbolSize:5,
+      lineStyle:{width:2.5},
+      data: dataByYear[y].i,
+      itemStyle:{color:COLORS[i]}
+    }))
+  });
+
+  // G2: Ingresos vs Ganancia vs Margen
+  const c2 = nav('c2');
+  const mAll=['Abr\'23','May\'23','Jun\'23','Jul\'23','Ago\'23','Sep\'23','Oct\'23','Nov\'23','Dic\'23',
+    'Ene\'24','Feb\'24','Mar\'24','Abr\'24','May\'24','Jun\'24','Jul\'24','Ago\'24','Sep\'24','Oct\'24','Nov\'24','Dic\'24',
+    'Ene\'25','Feb\'25','Mar\'25','Abr\'25','May\'25','Jun\'25','Jul\'25','Ago\'25','Sep\'25','Oct\'25','Nov\'25','Dic\'25',
+    'Ene\'26','Feb\'26','Mar\'26','Abr\'26','May\'26'];
+  const ingAll=[21152662,29935747,18751846,20682429,29011055,26325673,13564369,13850617,18889226,14552757,22526543,18458902,16807397,26117585,19440825,15851516,22282961,25479235,18655755,31085920,40075434,15175927,20757799,22000433,23568983,36018989,29707818,36337305,22941126,31034653,29766616,19987092,56436894,23595817,21675741,34089938,23016674,16471240];
+  const ganAll=[8724922,11775253,8145916,8178343,11852173,10280596,5164168,5638712,7977080,6610377,9519486,7558569,6616013,11186871,8059374,6477131,8345795,9135234,7380416,11786045,16131021,6778549,8967713,9094516,9049473,13683731,11138350,13521916,9483947,12148811,12450859,8756376,25339938,10116757,9504418,15155201,11585973,7526977];
+  const marAll=ingAll.map((v,i)=>ganAll[i]?+(ganAll[i]/v*100).toFixed(1):0);
+  c2.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['Ingresos','Ganancia','Margen %'],top:4},
+    grid:{left:60,right:60,bottom:50,top:44},
+    xAxis:{type:'category',data:mAll,axisLabel:{interval:5,rotate:30,fontSize:10}},
+    yAxis:[{type:'value',axisLabel:{formatter:v=>fmtM(v)}},{type:'value',min:0,max:100,axisLabel:{formatter:v=>v+'%'},splitLine:{show:false}}],
+    series:[
+      {name:'Ingresos',type:'bar',data:ingAll,itemStyle:{color:GOLD},barMaxWidth:14},
+      {name:'Ganancia',type:'bar',data:ganAll,itemStyle:{color:BLUE},barMaxWidth:14},
+      {name:'Margen %',type:'line',yAxisIndex:1,data:marAll,smooth:true,lineStyle:{color:GREEN,width:2.5},itemStyle:{color:GREEN},symbol:'none'}
+    ]
+  });
+
+  // G3: YoY crecimiento
+  const c3 = nav('c3');
+  const yoy=[];const yoyMes=[];
+  for(let m=0;m<12;m++){
+    const v24=dataByYear[2024].i[m], v25=dataByYear[2025].i[m];
+    if(v24>0&&v25>0){yoy.push(+((v25/v24-1)*100).toFixed(1));yoyMes.push(meses[m]);}
+  }
+  c3.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`${p[0].name}: <b>${p[0].value>0?'+':''}${p[0].value}%</b>`},
+    grid:{left:50,right:20,bottom:40,top:30},
+    xAxis:{type:'category',data:yoyMes},
+    yAxis:{type:'value',axisLabel:{formatter:v=>(v>0?'+':'')+v+'%'},splitLine:{lineStyle:{color:'#eee'}}},
+    series:[{
+      type:'bar',data:yoy,
+      itemStyle:{color:p=>p.value>=0?GREEN:RED},
+      label:{show:true,formatter:p=>(p.value>0?'+':'')+p.value+'%',fontSize:10}
+    }]
+  });
+
+  // G4: Heatmap día x mes (simplificado por día de semana vs ingresos)
+  const c4 = nav('c4');
+  const dias=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const diasIng=[118556686,147289388,115582797,135500764,167811778,157837863,83502223];
+  c4.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}: ${fmtM(p.value)}`},
+    grid:{left:50,right:20,bottom:40,top:30},
+    xAxis:{type:'category',data:dias},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[{
+      type:'bar',
+      data:dias.map((d,i)=>({value:diasIng[i],name:d,itemStyle:{color:diasIng[i]===Math.max(...diasIng)?GOLD:diasIng[i]===Math.min(...diasIng)?'#ccc':'#7986cb'}})),
+      label:{show:true,position:'top',formatter:p=>fmtM(p.value),fontSize:10}
+    }]
+  });
+
+  // G5: Ticket promedio por mes
+  const c5 = nav('c5');
+  const tAll=[330510,332619,334854,333588,287238,346390,315450,314787,304665,338436,296402,279680,275531,269253,290162,264192,285679,233754,278444,240976,207645,185072,220828,196432,177210,253655,185674,217589,171202,209694,197130,181701,213776,160516,169342,195919,168005,183014];
+  c5.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`${p[0].name}<br>Ticket: <b>${fmtK(p[0].value)}</b>`},
+    grid:{left:70,right:20,bottom:50,top:30},
+    xAxis:{type:'category',data:mAll,axisLabel:{interval:5,rotate:30,fontSize:10}},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtK(v)}},
+    series:[{
+      type:'line',smooth:true,data:tAll,
+      lineStyle:{color:GOLD,width:2.5},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(184,134,11,.25)'},{offset:1,color:'rgba(184,134,11,.02)'}]}},
+      itemStyle:{color:GOLD},symbol:'none'
+    }]
+  });
+}
+
+// ══ GRUPO 2 ══════════════════════════════════════════════════════════
+function initG2(){
+  // G6: Dona participación ingresos
+  const c6 = nav('c6');
+  c6.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}<br>${fmtM(p.value)} (${p.percent}%)`},
+    legend:{orient:'vertical',right:10,top:'center',textStyle:{fontSize:11}},
+    series:[{
+      type:'pie',radius:['40%','70%'],center:['38%','50%'],
+      data:tipos.nombres.map((n,i)=>({name:n,value:tipos.ingresos[i],itemStyle:{color:COLORS[i%COLORS.length]}})),
+      label:{formatter:p=>p.percent>3?p.name:''},
+      emphasis:{itemStyle:{shadowBlur:10,shadowOffsetX:0,shadowColor:'rgba(0,0,0,0.3)'}}
+    }]
+  });
+
+  // G7: Ingresos vs Margen por categoría
+  const c7 = nav('c7');
+  c7.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['Ingresos','Margen %'],top:4},
+    grid:{left:70,right:60,bottom:80,top:44},
+    xAxis:{type:'category',data:tipos.nombres,axisLabel:{rotate:30,fontSize:10}},
+    yAxis:[
+      {type:'value',name:'Ingresos',axisLabel:{formatter:v=>fmtM(v)}},
+      {type:'value',name:'Margen %',min:0,max:100,axisLabel:{formatter:v=>v+'%'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'Ingresos',type:'bar',data:tipos.ingresos,itemStyle:{color:GOLD},barMaxWidth:30},
+      {name:'Margen %',type:'line',yAxisIndex:1,data:tipos.margen,smooth:false,lineStyle:{color:GREEN,width:2.5},itemStyle:{color:GREEN},symbol:'circle',symbolSize:8,label:{show:true,formatter:p=>p.value+'%',fontSize:9,position:'top'}}
+    ]
+  });
+
+  // G8: Top 20 productos barras horizontales
+  const c8 = nav('c8');
+  const colorByTipo = n=>n==='Reloj'?GOLD:n==='Perfume'?BLUE:n==='Splash'?GREEN:n==='Gorra'?'#6a1a9a':'#e65100';
+  c8.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`<b>${p[0].name}</b><br>Ingresos: ${fmtM(p[0].value)}<br>Margen: ${top20.margen[p[0].dataIndex]}%`},
+    grid:{left:200,right:80,bottom:20,top:20},
+    xAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    yAxis:{type:'category',data:[...top20.nombres].reverse(),axisLabel:{fontSize:10}},
+    series:[{
+      type:'bar',
+      data:[...top20.ingresos].reverse().map((v,i)=>({value:v,itemStyle:{color:colorByTipo([...top20.tipo].reverse()[i])}})),
+      label:{show:true,position:'right',formatter:p=>fmtM(p.value),fontSize:10}
+    }]
+  });
+
+  // G9: Scatter volumen vs rentabilidad
+  const c9 = nav('c9');
+  c9.setOption({
+    tooltip:{trigger:'item',formatter:p=>`<b>${p.data[3]}</b><br>TX: ${p.data[0]}<br>Margen: ${p.data[1]}%<br>Ingresos: ${fmtM(p.data[2])}`},
+    grid:{left:60,right:20,bottom:50,top:30},
+    xAxis:{name:'Transacciones',type:'value'},
+    yAxis:{name:'Margen %',type:'value',min:35,max:95},
+    series:[{
+      type:'scatter',
+      data:tipos.nombres.map((n,i)=>[tipos.tx[i],tipos.margen[i],tipos.ingresos[i],n]),
+      symbolSize:d=>Math.max(12,Math.sqrt(d[2]/1e6)*4),
+      itemStyle:{color:d=>COLORS[tipos.nombres.indexOf(d.data[3])%COLORS.length],opacity:.8},
+      label:{show:true,formatter:p=>p.data[3],fontSize:10,position:'right'}
+    }]
+  });
+
+  // G10: Mix por año barras apiladas 100%
+  const c10 = nav('c10');
+  const topTipos=['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros','Gafas'];
+  const years=[2023,2024,2025,2026];
+  const totales=years.map(y=>topTipos.reduce((a,t)=>a+(mixYear[y][t]||0),0));
+  c10.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{let s=`<b>${p[0].axisValue}</b><br>`;p.forEach(x=>{if(x.value)s+=`${x.marker}${x.seriesName}: ${x.value.toFixed(1)}%<br>`});return s;}},
+    legend:{top:4,textStyle:{fontSize:11}},
+    grid:{left:50,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:years.map(String)},
+    yAxis:{type:'value',max:100,axisLabel:{formatter:v=>v+'%'}},
+    series:topTipos.map((t,i)=>({
+      name:t,type:'bar',stack:'total',
+      data:years.map((y,yi)=>{const tot=totales[yi];return tot?+((mixYear[y][t]||0)/tot*100).toFixed(1):0;}),
+      itemStyle:{color:COLORS[i%COLORS.length]}
+    }))
+  });
+}
+
+// ══ GRUPO 3 ══════════════════════════════════════════════════════════
+function initG3(){
+  // G11: Ingresos por canal
+  const c11 = nav('c11');
+  c11.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}<br>${fmtM(p.value)} (${p.percent}%)`},
+    legend:{orient:'vertical',right:10,top:'center',textStyle:{fontSize:11}},
+    series:[{
+      type:'pie',radius:['35%','65%'],center:['38%','50%'],
+      data:canales.nombres.map((n,i)=>({name:n,value:canales.ingresos[i],itemStyle:{color:COLORS[i%COLORS.length]}})),
+      label:{formatter:p=>p.percent>4?p.name:''}
+    }]
+  });
+
+  // G12: Margen por canal
+  const c12 = nav('c12');
+  const canOrd=[...canales.nombres.map((n,i)=>({n,m:canales.margen[i],ing:canales.ingresos[i]}))].sort((a,b)=>b.m-a.m);
+  c12.setOption({
+    tooltip:{trigger:'axis'},
+    grid:{left:160,right:60,bottom:20,top:20},
+    xAxis:{type:'value',max:55,axisLabel:{formatter:v=>v+'%'}},
+    yAxis:{type:'category',data:canOrd.map(x=>x.n).reverse(),axisLabel:{fontSize:11}},
+    series:[{
+      type:'bar',
+      data:canOrd.map(x=>({value:x.m,itemStyle:{color:x.m>=45?GREEN:x.m>=35?GOLD:RED}})).reverse(),
+      label:{show:true,position:'right',formatter:p=>p.value+'%',fontWeight:'bold'}
+    }]
+  });
+
+  // G13: Evolución presencial/digital/financiado
+  const c13 = nav('c13');
+  c13.setOption({
+    tooltip:{trigger:'axis',formatter:p=>{let s=`<b>${p[0].axisValue}</b><br>`;p.forEach(x=>s+=`${x.marker}${x.seriesName}: ${fmtM(x.value)}<br>`);return s;}},
+    legend:{top:4},
+    grid:{left:60,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:['2023','2024','2025','2026']},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[
+      {name:'Presencial',type:'bar',stack:'t',data:canalEvo.presencial,itemStyle:{color:GOLD}},
+      {name:'Digital',type:'bar',stack:'t',data:canalEvo.digital,itemStyle:{color:BLUE}},
+      {name:'Financiado',type:'bar',stack:'t',data:canalEvo.financiado,itemStyle:{color:GREEN}}
+    ]
+  });
+
+  // G14: Heatmap canal x tipo
+  const c14 = nav('c14');
+  const hmData=[];
+  heatCanal.canales.forEach((canal,ci)=>{
+    heatCanal.tipos.forEach((tipo,ti)=>{
+      const v=heatCanal.data[ci][ti];
+      if(v>0) hmData.push([ti,ci,Math.round(v/1e6)]);
+    });
+  });
+  const maxVal=Math.max(...hmData.map(d=>d[2]));
+  c14.setOption({
+    tooltip:{formatter:p=>`${heatCanal.canales[p.data[1]]} × ${heatCanal.tipos[p.data[0]]}<br>$${p.data[2]}M`},
+    grid:{left:120,right:20,bottom:80,top:20},
+    xAxis:{type:'category',data:heatCanal.tipos,axisLabel:{rotate:30,fontSize:10}},
+    yAxis:{type:'category',data:heatCanal.canales,axisLabel:{fontSize:10}},
+    visualMap:{min:0,max:maxVal,calculable:true,orient:'horizontal',left:'center',bottom:0,inRange:{color:['#fff8e1','#f57f17','#e65100']},text:['Alto','Bajo'],textStyle:{fontSize:10}},
+    series:[{type:'heatmap',data:hmData,label:{show:true,formatter:p=>p.data[2]>0?`$${p.data[2]}M`:'',fontSize:9}}]
+  });
+}
+
+// ══ GRUPO 4 ══════════════════════════════════════════════════════════
+function initG4(){
+  // G15: Ingresos + margen por vendedor
+  const c15 = nav('c15');
+  c15.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['Ingresos','Margen %'],top:4},
+    grid:{left:60,right:60,bottom:30,top:44},
+    xAxis:{type:'category',data:vendedores.nombres},
+    yAxis:[
+      {type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+      {type:'value',min:0,max:80,axisLabel:{formatter:v=>v+'%'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'Ingresos',type:'bar',data:vendedores.ingresos,itemStyle:{color:GOLD},barMaxWidth:50},
+      {name:'Margen %',type:'line',yAxisIndex:1,data:vendedores.margen,smooth:false,lineStyle:{color:GREEN,width:2.5},itemStyle:{color:GREEN},symbol:'circle',symbolSize:10,label:{show:true,formatter:p=>p.value+'%',fontSize:11,fontWeight:'bold',color:GREEN}}
+    ]
+  });
+
+  // G16: Evolución vendedores por año (2025 vs 2026)
+  const c16 = nav('c16');
+  const vends25=Object.entries(vendYear[2025]);
+  const vends26=Object.entries(vendYear[2026]);
+  const allVends=[...new Set([...vends25.map(x=>x[0]),...vends26.map(x=>x[0])])];
+  c16.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['2025','2026'],top:4},
+    grid:{left:60,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:allVends},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[
+      {name:'2025',type:'bar',data:allVends.map(v=>vendYear[2025][v]||0),itemStyle:{color:GOLD},barMaxWidth:40},
+      {name:'2026',type:'bar',data:allVends.map(v=>vendYear[2026][v]||0),itemStyle:{color:BLUE},barMaxWidth:40}
+    ]
+  });
+
+  // G17: Ticket promedio por vendedor
+  const c17 = nav('c17');
+  c17.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`${p[0].name}: ${fmtK(p[0].value)}`},
+    grid:{left:70,right:20,bottom:30,top:20},
+    xAxis:{type:'category',data:vendedores.nombres},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtK(v)}},
+    series:[{
+      type:'bar',data:vendedores.ticket.map((v,i)=>({value:v,itemStyle:{color:COLORS[i]}})),
+      barMaxWidth:50,
+      label:{show:true,position:'top',formatter:p=>fmtK(p.value),fontSize:11,fontWeight:'bold'}
+    }]
+  });
+
+  // G18: Ingresos por punto de venta
+  const c18 = nav('c18');
+  c18.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}<br>${fmtM(p.value)} (${p.percent}%)`},
+    series:[{
+      type:'pie',radius:'65%',center:['50%','50%'],
+      data:puntos.nombres.map((n,i)=>({name:n,value:puntos.ingresos[i],itemStyle:{color:COLORS[i%COLORS.length]}})),
+      label:{formatter:p=>p.percent>1?`${p.name}\n${fmtM(p.value)}`:'',fontSize:11}
+    }]
+  });
+
+  // G19: Mix productos por punto de venta (simplificado Isla vs Virtual)
+  const c19 = nav('c19');
+  // Aproximación con datos disponibles
+  const pvTipos=['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros'];
+  const pvIsla=[62,18,4,7,4,3,2];
+  const pvVirtual=[55,20,12,5,4,2,2];
+  c19.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{let s=`<b>${p[0].axisValue}</b><br>`;p.forEach(x=>s+=`${x.marker}${x.seriesName}: ${x.value}%<br>`);return s;}},
+    legend:{top:4},
+    grid:{left:50,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:pvTipos,axisLabel:{rotate:15}},
+    yAxis:{type:'value',axisLabel:{formatter:v=>v+'%'},max:70},
+    series:[
+      {name:'Isla',type:'bar',data:pvIsla,itemStyle:{color:GOLD},barMaxWidth:35},
+      {name:'Virtual',type:'bar',data:pvVirtual,itemStyle:{color:BLUE},barMaxWidth:35}
+    ]
+  });
+}
+
+// ══ GRUPO 5 ══════════════════════════════════════════════════════════
+function initG5(){
+  // G20: Top clientes barras horiz
+  const c20 = nav('c20');
+  const ord=[...topClientes.nombres.map((n,i)=>({n,g:topClientes.gasto[i],c:topClientes.compras[i]}))].sort((a,b)=>b.g-a.g);
+  c20.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`<b>${p[0].name}</b><br>Gasto: ${fmtM(p[0].value)}`},
+    grid:{left:200,right:80,bottom:20,top:20},
+    xAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    yAxis:{type:'category',data:ord.map(x=>x.n).reverse(),axisLabel:{fontSize:10}},
+    series:[{
+      type:'bar',
+      data:ord.map(x=>({value:x.g,itemStyle:{color:x.g>15e6?GOLD:x.g>8e6?GOLD2:BLUE}})).reverse(),
+      label:{show:true,position:'right',formatter:p=>fmtM(p.value),fontSize:10}
+    }]
+  });
+
+  // G21: Frecuencia
+  const c21 = nav('c21');
+  c21.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}<br><b>${p.value} clientes</b> (${p.percent}%)`},
+    series:[{
+      type:'pie',radius:['35%','65%'],center:['50%','50%'],
+      data:freqClientes.seg.map((s,i)=>({name:s,value:freqClientes.cnt[i],itemStyle:{color:[RED,'#e65100',GOLD,BLUE,GREEN][i]}})),
+      label:{formatter:p=>`${p.name}\n${p.value} (${p.percent}%)`}
+    }]
+  });
+
+  // G23: Segmentos precio
+  const c23 = nav('c23');
+  c23.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`${p[0].name}<br>TX: <b>${p[0].value}</b><br>Ingresos: ${fmtM(segPrecio.ing[p[0].dataIndex])}`},
+    grid:{left:50,right:20,bottom:30,top:20},
+    xAxis:{type:'category',data:['Bajo\n<$100K','Medio\n$100K-$300K','Alto\n$300K-$600K','Premium\n>$600K']},
+    yAxis:{type:'value',name:'Transacciones'},
+    series:[{
+      type:'bar',
+      data:segPrecio.tx.map((v,i)=>({value:v,itemStyle:{color:[BLUE,GOLD,GREEN,RED][i]}})),
+      barMaxWidth:60,
+      label:{show:true,position:'top',formatter:p=>`${p.value} tx`,fontWeight:'bold'}
+    }]
+  });
+}
+
+// ══ GRUPO 6 ══════════════════════════════════════════════════════════
+function initG6(){
+  // G24: Pagos dona
+  const c24 = nav('c24');
+  c24.setOption({
+    tooltip:{trigger:'item',formatter:p=>`${p.name}<br>${fmtM(p.value)} (${p.percent}%)`},
+    legend:{orient:'vertical',right:10,top:'center',textStyle:{fontSize:11}},
+    series:[{
+      type:'pie',radius:['40%','70%'],center:['38%','50%'],
+      data:pagos.nombres.map((n,i)=>({name:n,value:pagos.ingresos[i],itemStyle:{color:COLORS[i%COLORS.length]}})),
+      label:{formatter:p=>p.percent>5?p.name:''}
+    }]
+  });
+
+  // G25: Crédito vs contado por año
+  const c25 = nav('c25');
+  // Contado: presencial directa; Crédito: todo lo demás financiado
+  const contadoAll=[114864685,155698001,272072005,99920187];
+  const creditoAll=[71001687,115736765,71298116,18690173];
+  const anosAll=['2023','2024','2025','2026'];
+  const anosIdx=anosAll.map((a,i)=>i).filter(i=>(contadoAll[i]||0)+(creditoAll[i]||0)>0);
+  const anos25=anosIdx.map(i=>anosAll[i]);
+  const contado=anosIdx.map(i=>contadoAll[i]);
+  const credito=anosIdx.map(i=>creditoAll[i]);
+  c25.setOption({
+    tooltip:{trigger:'axis',formatter:p=>{let s=`<b>${p[0].axisValue}</b><br>`;p.forEach(x=>s+=`${x.marker}${x.seriesName}: ${fmtM(x.value)}<br>`);return s;}},
+    legend:{top:4},
+    grid:{left:60,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:anos25},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[
+      {name:'Contado / Presencial',type:'bar',stack:'t',data:contado,itemStyle:{color:GREEN}},
+      {name:'Crédito / Financiado',type:'bar',stack:'t',data:credito,itemStyle:{color:GOLD}}
+    ]
+  });
+}
+
+// ══ GRUPO 7 ══════════════════════════════════════════════════════════
+function initG7(){
+  // G26: KPI anual barras dobles
+  const c26 = nav('c26');
+  c26.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['Ingresos','Ganancia'],top:4},
+    grid:{left:70,right:20,bottom:30,top:44},
+    xAxis:{type:'category',data:kpiAnual.anios.map(String)},
+    yAxis:{type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+    series:[
+      {name:'Ingresos',type:'bar',data:kpiAnual.ingresos,itemStyle:{color:GOLD},barMaxWidth:50,label:{show:true,position:'top',formatter:p=>fmtM(p.value),fontSize:10}},
+      {name:'Ganancia',type:'bar',data:kpiAnual.ganancia,itemStyle:{color:BLUE},barMaxWidth:50,label:{show:true,position:'top',formatter:p=>fmtM(p.value),fontSize:10}}
+    ]
+  });
+
+  // G27: Margen por año línea
+  const c27 = nav('c27');
+  c27.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`${p[0].axisValue}: <b>${p[0].value}%</b> margen`},
+    grid:{left:60,right:30,bottom:30,top:30},
+    xAxis:{type:'category',data:kpiAnual.anios.map(String)},
+    yAxis:{type:'value',min:35,max:60,axisLabel:{formatter:v=>v+'%'}},
+    series:[{
+      type:'line',data:kpiAnual.margen,smooth:false,
+      lineStyle:{color:GREEN,width:3},
+      itemStyle:{color:GREEN},symbol:'circle',symbolSize:10,
+      label:{show:true,formatter:p=>p.value+'%',fontSize:14,fontWeight:'bold',color:GREEN,position:'top'},
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(46,125,50,.2)'},{offset:1,color:'rgba(46,125,50,.02)'}]}}
+    }]
+  });
+
+  // G28: Ranking vendedor
+  const c28 = nav('c28');
+  c28.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{data:['Ingresos','Margen %'],top:4},
+    grid:{left:80,right:60,bottom:30,top:44},
+    xAxis:{type:'category',data:vendedores.nombres},
+    yAxis:[
+      {type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+      {type:'value',min:0,max:80,axisLabel:{formatter:v=>v+'%'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'Ingresos',type:'bar',data:vendedores.ingresos.map((v,i)=>({value:v,itemStyle:{color:i===0?GOLD:BLUE}})),barMaxWidth:50},
+      {name:'Margen %',type:'line',yAxisIndex:1,data:vendedores.margen,lineStyle:{color:GREEN,width:2.5},itemStyle:{color:GREEN},symbol:'circle',symbolSize:10,label:{show:true,formatter:p=>p.value+'%',fontSize:11,color:GREEN,fontWeight:'bold'}}
+    ]
+  });
+
+  // G30: Día de la semana
+  const c30 = nav('c30');
+  const diasD=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const diasDI=[118556686,147289388,115582797,135500764,167811778,157837863,83502223];
+  const diasDT=[220366,228002,215238,225084,255033,229083,240640];
+  c30.setOption({
+    tooltip:{trigger:'axis',formatter:p=>`<b>${p[0].name}</b><br>Ingresos: ${fmtM(p[0].value)}<br>Ticket prom: ${fmtK(diasDT[p[0].dataIndex])}`},
+    grid:{left:70,right:70,bottom:30,top:30},
+    xAxis:{type:'category',data:diasD},
+    yAxis:[
+      {type:'value',axisLabel:{formatter:v=>fmtM(v)}},
+      {type:'value',min:200000,max:270000,axisLabel:{formatter:v=>fmtK(v)},splitLine:{show:false}}
+    ],
+    series:[
+      {type:'bar',data:diasDI.map((v,i)=>({value:v,itemStyle:{color:v===Math.max(...diasDI)?GOLD:v===Math.min(...diasDI)? '#ccc':'#7986cb'}})),barMaxWidth:50,yAxisIndex:0},
+      {type:'line',data:diasDT,yAxisIndex:1,lineStyle:{color:GREEN,width:2},itemStyle:{color:GREEN},symbol:'circle',symbolSize:7}
+    ]
+  });
+}
+
+// ── INIT PRIMERA SECCIÓN ──────────────────────────────────────────────
+window.addEventListener('load',()=>{ initCharts('g1'); });
+window.addEventListener('resize',()=>{ echarts.getInstanceByDom&&document.querySelectorAll('[id^=c]').forEach(el=>{const c=echarts.getInstanceByDom(el);if(c)c.resize();}); });
+</script>
+</body>
+</html>
