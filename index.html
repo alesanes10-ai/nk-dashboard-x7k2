@@ -481,119 +481,49 @@ function showSection(id){
 const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
 // Mensual por año
-const dataByYear = {
-  2023: {i:[0,0,0,21152662,29935747,18751846,20682429,29011055,26325673,13564369,13850617,18889226], g:[0,0,0,8724922,11775253,8145916,8178343,11852173,10280596,5164168,5638712,7977080], t:[0,0,0,330510,332619,334854,333588,287238,346390,315450,314787,304665]},
-  2024: {i:[14552757,22526543,18458902,16807397,26117585,19440825,15851516,22282961,25479235,18655755,31085920,40075434], g:[6610377,9519486,7558569,6616013,11186871,8059374,6477131,8345795,9135234,7380416,11786045,16131021], t:[338436,296402,279680,275531,269253,290162,264192,285679,233754,278444,240976,207645]},
-  2025: {i:[15175927,20757799,22000433,23568983,36018989,29707818,36337305,22941126,31034653,29766616,19987092,56436894], g:[6778549,8967713,9094516,9049473,13683731,11138350,13521916,9483947,12148811,12450859,8756376,25339938], t:[185072,220828,196432,177210,253655,185674,217589,171202,209694,197130,181701,213776]},
-  2026: {i:[23595817,21675741,34089938,23016674,16471240,0,0,0,0,0,0,0], g:[10116757,9504418,15155201,11585973,7526977,0,0,0,0,0,0,0], t:[160516,169342,195919,168005,183014,0,0,0,0,0,0,0]}
-};
+const dataByYear = {"2023": {"i": [0, 0, 0, 21152662, 29935747, 18751846, 20682429, 29011055, 26325673, 13564369, 13850617, 18889226], "g": [0, 0, 0, 8724922, 11775253, 8145916, 8178343, 11852173, 10280596, 5164168, 5638712, 7977080], "t": [0, 0, 0, 67, 93, 56, 69, 103, 77, 45, 44, 65]}, "2024": {"i": [14552757, 22526543, 18458901.5, 16807397, 26117585, 19440825, 15851516, 22282961, 25479235, 18655755, 31085920, 40075434], "g": [6610377, 9519486, 7558568.5, 6616013, 11186871, 8059374, 6477131, 8345795, 9135234, 7380416, 11786045, 16131021], "t": [44, 86, 75, 62, 103, 69, 64, 80, 116, 69, 133, 202]}, "2025": {"i": [15175927, 20757799, 22000433, 23568983, 36018989, 29707818, 36337305, 22941125.8, 31034652.74, 29766616.43, 19987091.56, 56436893.64], "g": [6778549, 8967713, 9094515.54, 9049473, 13683731.33, 11138350.42, 13521916.15, 9483947.48, 12148811.19, 12450859.38, 8756375.63, 25339938.02], "t": [88, 98, 119, 142, 150, 168, 171, 145, 151, 156, 113, 284]}, "2026": {"i": [23595817.26, 21675741.46, 34089937.74, 23016673.81, 16471240.45, 0, 0, 0, 0, 0, 0, 0], "g": [10116757.35, 9504417.61, 15155200.95, 11585973.15, 7526976.53, 0, 0, 0, 0, 0, 0, 0], "t": [159, 136, 190, 141, 94, 0, 0, 0, 0, 0, 0, 0]}};
 
 // Tipos de producto
-const tipos = {
-  nombres:['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros','Gafas','Manilla','Billetera','Crema','Servicio'],
-  ingresos:[558066834,193423831,64920077,41952310,22941392,16030907,13033730,11051202,3341726,648608,561668,90000],
-  ganancia:[231530656,70966558,28959423,18824728,10915741,7568273,5310433,4625445,1484100,376104,228325,50000],
-  margen:[41.4,37.8,59.1,43.3,47.5,46.4,45.4,43.6,43.0,58.1,40.2,90.5],
-  tx:[1369,717,1123,464,87,81,92,23,43,4,6,7]
-};
+const tipos = {"nombres": ["Reloj", "Perfume", "Repuesto", "Splash", "Bolso", "Gorra", "Otros", "Gafas", "Manilla", "Billetera", "Crema", "Servicio", "Capuchon"], "ingresos": [558066833.53, 193423830.53, 64920077.3, 41952310.48, 22941391.85, 16030906.8, 13033730.2, 11051201.7, 3341726, 648608, 561668, 90000, 19214], "ganancia": [231530655.89, 70966558.26, 28959422.93, 18824727.85, 10915741.21, 7568273.34, 5310432.72, 4625445.41, 1484100.25, 376103.63, 228324.74, 50000, 7214], "margen": [41.5, 36.7, 44.6, 44.9, 47.6, 47.2, 40.7, 41.9, 44.4, 58.0, 40.7, 55.6, 37.5], "tx": [1369, 717, 1123, 464, 87, 81, 92, 23, 43, 4, 6, 7, 1]};
 
 // Top 20 productos
-const top20 = {
-  nombres:["Invicta 6983","Splash Vict. Secret","Invicta 6981","Invicta 22340","Invicta 6977","Gorra Columbia","Yara EDP Lattafa","Splash B&BW","Invicta 0072","Bade'e Al Oud Glory","Bade'e Al Oud Ameth.","Invicta 0073","Nautica Voyage","Manilla Invicta","Crema Vict. Secret","Khamrah Lattafa","Club Nuit Women","Club Nuit Intense","Invicta 30022","Starwalker Montblanc"],
-  ingresos:[29180286,21495766,15062465,15036322,9423160,9313244,8538020,7186069,6701694,6641964,6422312,5648415,5465058,4785041,4204150,3975000,3881242,3851072,3503722,3410000],
-  margen:[42.8,44.4,43.6,39.8,45.9,46.3,41.0,40.6,43.4,40.2,36.3,43.1,43.0,41.6,38.0,40.0,42.5,41.4,43.5,42.7],
-  tipo:['Reloj','Splash','Reloj','Reloj','Reloj','Gorra','Perfume','Splash','Reloj','Perfume','Perfume','Reloj','Perfume','Repuesto','Splash','Perfume','Perfume','Perfume','Reloj','Perfume']
-};
+const top20 = {"nombres": ["Invicta Pro Diver Scuba 6983", "Splash Victoria Secret", "Invicta Pro Diver Scuba 6981", "Invicta Pro Diver Scuba 22340", "Invicta Pro Diver Scuba 6977", "Gorra Columbia", "Yara EDP 100ml By Lattafa", "Splash Bath & Body Works", "Invicta Pro Diver Scuba 0072", "Bade'e Al Oud For Glory Unisex 100ml By Lattafa", "Bade'e Al Oud Amethyst Unisex 100ml By Lattafa", "Invicta Pro Diver Scuba 0073", "Nautica Voyage 100ml EDT By Nautica", "Manilla Invicta I-Force 24mm", "Crema Victoria Secret", "Khamrah EDP Unisex 100ml By Lattafa", "Club De Nuit Women 105ml By Armaf", "Club De Nuit Intense Men EDT 105ml By Armaf", "Invicta Pro Diver 30022", "Starwalker Men 75ml By Mont Blanc"], "ingresos": [29180285.5, 21495766.44, 15062464.8, 15036322.2, 9423159.5, 9313244.2, 8538019.8, 7186069.4, 6701693.75, 6641964, 6422312, 5648415, 5465057.7, 4785041, 4204149.88, 3975000, 3881242.26, 3851072, 3503722, 3410000], "margen": [43.3, 44.9, 44.0, 40.0, 46.7, 47.4, 43.3, 43.7, 43.6, 42.0, 37.1, 43.5, 42.4, 42.4, 39.3, 42.0, 43.0, 43.5, 43.3, 43.1], "tipo": ["Reloj", "Splash", "Reloj", "Reloj", "Reloj", "Gorra", "Perfume", "Splash", "Reloj", "Perfume", "Perfume", "Reloj", "Perfume", "Repuesto", "Splash", "Perfume", "Perfume", "Perfume", "Reloj", "Perfume"]};
 
 // Canales
-const canales = {
-  nombres:['Directa','LuegoPago','Tu360 Bancolombia','MercadoLibre','Sistecredito','Addi','Addi Marketplace','Página Web'],
-  ingresos:[642554878,157389581,40445297,35998252,24677572,10788442,5418166,4348748],
-  margen:[49.5,39.5,29.2,37.8,41.4,35.9,41.3,34.7],
-  tx:[2845,492,139,381,67,33,12,10]
-};
+const canales = {"nombres": ["Directa", "LuegoPago", "Tu360 Bancolombia", "MercadoLibre", "Sistecredito", "Addi", "Addi Marketplace", "Página Web", "Obsequio/Premio"], "ingresos": [642554878.32, 157389580.6, 40445296.97, 35998252, 24677572, 10788442, 5418165.85, 4348747.65, 0], "margen": [42.8, 38.2, 28.8, 37.9, 41.1, 33.3, 41.4, 34.3, 0], "tx": [2845, 492, 139, 381, 67, 33, 12, 10, 7]};
 
 // Vendedores
-const vendedores = {
-  nombres:['Anggie','Luisa','Argentina','Diana','Nayit'],
-  ingresos:[392825263,48111097,7144885,6007674,5042668],
-  margen:[45.9,62.6,56.6,72.1,45.9],
-  ticket:[218115,120882,121100,103581,186765]
-};
+const vendedores = {"nombres": ["Anggie", "Luisa", "Argentina", "Diana", "Nayit"], "ingresos": [392825263.26, 48111096.65, 7144885.3, 6007673.68, 5042668], "margen": [41.0, 46.7, 45.2, 57.6, 44.7], "ticket": [218115.08, 120882.15, 121099.75, 103580.58, 186765.48]};
 
 // Puntos de venta
-const puntos = {
-  nombres:['Isla','Virtual','Mayorista','Directa','Presencial','Nayit'],
-  ingresos:[250830693,243713184,33429865,695000,525000,300000],
-  margen:[54.8,40.6,38.7,72.6,43.4,41.4]
-};
+const puntos = {"nombres": ["Isla", "Virtual", "Mayorista", "Directa", "Presencial", "Nayit", "Pagina Web"], "ingresos": [250830693.37, 243713183.92, 33429864.5, 695000, 525000, 300000, 252806.1], "margen": [43.8, 39.4, 36.7, 72.6, 41.9, 41.4, 36.0]};
 
 // Mix por año
-const mixYear = {
-  2023:{Reloj:127637009,Perfume:43760625,Repuesto:7388552,Splash:4979732,Otros:4117805,Gafas:2050000,Bolso:1749901,Gorra:420000},
-  2024:{Reloj:155566202,Perfume:70247867,Splash:14358696,Repuesto:11499728,Gorra:8269923,Bolso:7175705,Otros:2957448,Gafas:1040000,Manilla:219261},
-  2025:{Reloj:210575776,Perfume:63755809,Repuesto:31247593,Splash:16532421,Bolso:7369939,Gorra:4738135,Otros:4299425,Manilla:2345465,Gafas:2230147,Crema:331668,Billetera:258044},
-  2026:{Reloj:64287847,Perfume:15659530,Repuesto:14784205,Bolso:6645847,Splash:6081462,Gafas:5731055,Gorra:2602849,Otros:1659052,Manilla:777000,Billetera:390564,Crema:230000}
-};
+const mixYear = {"2025": {"Reloj": 210575775.59, "Perfume": 63755808.67, "Repuesto": 31247592.5, "Splash": 16532420.56, "Bolso": 7369939.35, "Gorra": 4738134.6, "Otros": 4299425.4, "Manilla": 2345465, "Gafas": 2230146.5, "Crema": 331668, "Billetera": 258044, "Servicio": 30000, "Capuchon": 19214}, "2024": {"Reloj": 155566201.5, "Perfume": 70247867, "Splash": 14358696, "Repuesto": 11499728, "Gorra": 8269923, "Bolso": 7175705, "Otros": 2957448, "Gafas": 1040000, "Manilla": 219261}, "2026": {"Reloj": 64287847.44, "Perfume": 15659529.86, "Repuesto": 14784204.8, "Bolso": 6645846.5, "Splash": 6081461.92, "Gafas": 5731055.2, "Gorra": 2602849.2, "Otros": 1659051.8, "Manilla": 777000, "Billetera": 390564, "Crema": 230000}, "2023": {"Reloj": 127637009, "Perfume": 43760625, "Repuesto": 7388552, "Splash": 4979732, "Otros": 4117805, "Gafas": 2050000, "Bolso": 1749901, "Gorra": 420000, "Servicio": 60000}};
 
 // Clientes top
-const topClientes = {
-  nombres:['Fonfaranda','MercadoLibre','A.F. Herrera Niño','Rhonal Montes','Ivet Marimon','R. Montes Castellar','Nicole A. Herrera','Cindy Castellon','Hernan Garcia','Mayelis Castro','George Market','A.F. Herrera (dup)','Deivis Pautt','Jaime Ramos','Guido Garcia'],
-  gasto:[17645227,12633700,12174000,10040000,8652900,8075000,7399077,6800294,6610500,6510000,6060000,5165000,4590000,4440000,4226000],
-  compras:[49,160,54,26,17,26,31,23,24,13,6,22,14,16,15]
-};
+const topClientes = {"nombres": ["No Registra Informacion", "Fonfaranda", "MercadoLibre", "Andres Felipe Herrera Niño", "Rhonal Montes", "Ivet Marimon", "Rhonal Montes Castellar", "Nicole Andrea Herrera Ramos", "Cindy Castellon", "Hernan Garcia Guzman", "Mayelis Castro Martinez", "George Market", "Andrés Felipe Herrera Niño", "Deivis Pautt", "Jaime Ramos"], "gasto": [28395474.36, 17645227, 12633700, 12174000, 10040000, 8652900, 8075000, 7399077, 6800294, 6610500, 6510000, 6060000, 5165000, 4590000, 4440000], "compras": [550, 49, 160, 54, 26, 17, 26, 31, 23, 24, 13, 6, 22, 14, 16]};
 
 // Frecuencia clientes
-const freqClientes = {seg:['1 compra','2 compras','3-5 compras','6-10 compras','11+ compras'],cnt:[1436,183,152,58,28]};
+const freqClientes = {"seg": ["1 compra", "2 compras", "3-5 compras", "6-10 compras", "11+ compras"], "cnt": [1436, 183, 152, 58, 28]};
 
 // Segmentos precio
-const segPrecio = {seg:['Bajo\n<100K','Medio\n100K-300K','Alto\n300K-600K','Premium\n>600K'],tx:[1532,1241,1033,211],ing:[83322969,240977609,437125183,164655737]};
+const segPrecio = {"seg": ["Bajo\n<100K", "Medio\n100K-300K", "Alto\n300K-600K", "Premium\n>600K"], "tx": [1532, 1241, 1033, 211], "ing": [83322969.48, 240977609.16, 437125182.6, 164655737.15]};
 
 // Pagos
-const pagos = {
-  nombres:['Contado','Crédito Propio','LuegoPago','Addi','Sistecredito','Tu360 Bancolombia','Otro'],
-  ingresos:[203904292,145675732,42143915,32121178,13084222,7922514,11991213]
-};
+const pagos = {"nombres": ["Credito NK", "Bancolombia", "Credito", "Efectivo", "Nequi", "LuegoPago", "Addi", "MercadoPago", "Sistecredito", "TC Master", "TC Visa", "Daviplata", "Plan Separe", "Tu360 Bancolombia", "AperColombia", "Tu360ComprasBancolombia", "Efectivo/Nequi", "Wompi", "TC Master - Efectivo", "Visa", "Mayorista", "Tu360Compras Bancolombia", "DaviPlata", "EnvioClick", "TC Amex", "Tu 360 Bancolombia", "Sistecredito/Nequi", "Addi - Efectivo", "Addi/Nequi", "Wompi/Visa", "Aper Colombia", "Tc  Visa", "Nequi/Credito NK", "Credito Mayorista", "Efectivo/Bancolombia", "Transferencia Nequi", "Sistecredito/TC Visa", "Mkpl ADDI", "MKP Addi", "Efectivo/Plan Separe", "Addi - Credito NK", "Wompi/Bancolombia", "Efectivo - Nequi", "Nequi/Efectivo", "Master", "Envioclick", "Addi Web", "Tc Master", "Credito/Bancol", "360 Mi bancolombia", "Aper Bancolombia", "Transferencia nequi", "luegoPago", "TC Visa - Efectivo", "MercadoLibre", "Bancolombia/Nequi", "Directo", "Contra Entrega", "Bancolombia/Efectivo", "Mercado Libre", "Tc Visa", "bancolombia", "Garantia", "Bono", "Cortesia", "Obsequi"], "ingresos": [80213695, 65623121.19, 61392037, 51140500, 42540600, 41955322.6, 29133087.7, 21848754, 11934222, 8977637.3, 6411728.5, 3692107, 3540000, 3440914.29, 2714416, 1393500, 1113000, 1015222.25, 872000, 864738, 815000, 764462.16, 755000, 711304, 708205, 690608, 650000, 624530, 619060, 617117, 599000, 557275.6, 540000, 530000, 530000, 515000, 500000, 489301.5, 482967, 480000, 476983.35, 437808.62, 380000, 367000, 326678.8, 307034, 295248, 288246, 250000, 239050, 221171.33, 212000, 188592, 156070, 144811, 120000, 92000, 89367, 85000, 83903, 81669.7, 5000, 0, 0, 0, 0]};
 
 // KPI anuales
-const kpiAnual = {
-  anios:[2023,2024,2025,2026],
-  ingresos:[192163624,271334830,343733634,118849411],
-  ganancia:[77737163,108806332,140414180,53889326],
-  margen:[40.7,41.7,48.8,52.8],
-  ticket:[321344,259402,202554,175813],
-  tx:[598,1046,1697,676]
-};
+const kpiAnual = {"anios": [2023, 2024, 2025, 2026], "ingresos": [192163624, 271334829.5, 343733634.17, 118849410.72], "ganancia": [77737163, 108806331.5, 140414180.14, 53889325.59], "margen": [40.5, 40.1, 40.8, 45.3], "ticket": [321343.85, 259402.32, 202553.7, 175812.74], "tx": [598, 1046, 1697, 676]};
 
 // Canal presencial/digital/financiado por año
-const canalEvo = {
-  anios:[2023,2024,2025,2026],
-  presencial:[114864685,155698001,272072005,99920187],
-  digital:[5777252,8475063,21580728,9932122],
-  financiado:[71001687,104823766,48717388,8758051]
-};
+const canalEvo = {"anios": [2023, 2024, 2025, 2026], "presencial": [114864685, 155698001, 272072005.18, 99920187.14], "digital": [5777252, 8475063, 21580728.25, 9932122.25], "financiado": [71001687, 104823765.5, 48717387.739999995, 8758051.33]};
 
 // Heatmap canal x tipo
-const heatCanal = {
-  canales:['Directa','LuegoPago','Tu360 Banc.','MercadoLibre','Sistecredito','Addi','Addi Mkt','Pág. Web'],
-  tipos:['Reloj','Perfume','Repuesto','Splash','Bolso','Gorra','Otros','Gafas','Manilla','Billetera'],
-  data:[
-    [380250400,135610317,33978344,36224271,20644973,13911970,9424742,8718430,2800549,320000],
-    [129251576,17328472,0,5111963,1861610,1677538,2020378,0,0,138044],
-    [7824718,30675688,0,0,0,0,683610,1070717,0,190564],
-    [5107607,0,30439468,0,0,0,0,0,451177,0],
-    [19800816,3890506,0,362350,215600,163300,245000,0,0,0],
-    [7175553,2887689,92265,253726,219209,160000,0,0,0,0],
-    [5165360,252806,0,0,0,0,0,0,0,0],
-    [1869291,1099303,0,0,0,118099,0,1262055,0,0]
-  ]
-};
+const heatCanal = {"canales": ["Directa", "LuegoPago", "Tu360 Bancolombia", "MercadoLibre", "Sistecredito", "Addi", "Addi Marketplace", "Página Web", "Obsequio/Premio"], "tipos": ["Reloj", "Perfume", "Repuesto", "Splash", "Bolso", "Gorra", "Otros", "Gafas", "Manilla", "Billetera", "Crema", "Servicio", "Capuchon"], "data": [[380250399.76, 135610317.39, 33978344.3, 36224271.22, 20644972.85, 13911970, 9424741.8, 8718430, 2800549, 320000, 561668, 90000, 19214], [129251575.94, 17328471.8, 0, 5111963.26, 1861610, 1677537.6, 2020378, 0, 0, 138044, 0, 0, 0], [7824718.33, 30675687.74, 0, 0, 0, 0, 683610.4, 1070716.5, 0, 190564, 0, 0, 0], [5107607, 0, 30439468, 0, 0, 0, 0, 0, 451177, 0, 0, 0, 0], [19800816, 3890506, 0, 362350, 215600, 163300, 245000, 0, 0, 0, 0, 0, 0], [7175553, 2887689, 92265, 253726, 219209, 160000, 0, 0, 0, 0, 0, 0, 0], [5165359.75, 252806.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1869290.75, 1099302.5, 0, 0, 0, 118099.2, 0, 1262055.2, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]};
 
 // Vendedores por año
-const vendYear = {
-  2025:{Anggie:294190250,Luisa:41049258,Nayit:5042668},
-  2026:{Anggie:98635013,Argentina:7144885,Luisa:7061838,Diana:6007674}
-};
+const vendYear = {"2025": {"Anggie": 294190249.97, "Luisa": 41049258.2, "Nayit": 5042668}, "2026": {"Anggie": 98635013.29, "Argentina": 7144885.3, "Luisa": 7061838.45, "Diana": 6007673.68}};
 
 // ── INIT BY SECTION ──────────────────────────────────────────────────
 const rendered = {};
